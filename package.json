@@ -50,7 +50,8 @@
     "@vaadin/vaadin-upload": "5.0.0",
     "lit-element": "2.5.1",
     "lit-html": "1.4.1",
-    "lumo-css-framework": "^3.0.11"
+    "lumo-css-framework": "^3.0.11",
+    "@flowingcode/font-awesome-iron-iconset": "2.2.1"
   },
   "devDependencies": {
     "@types/validator": "13.1.0",
@@ -126,7 +127,8 @@
       "@vaadin/vaadin-time-picker": "3.0.0",
       "@vaadin/vaadin-upload": "5.0.0",
       "lit-element": "2.5.1",
-      "lit-html": "1.4.1"
+      "lit-html": "1.4.1",
+      "@flowingcode/font-awesome-iron-iconset": "2.2.1"
     },
     "devDependencies": {
       "@types/validator": "13.1.0",
@@ -154,6 +156,6 @@
       "workbox-webpack-plugin": "5.1.4",
       "fork-ts-checker-webpack-plugin": "6.2.1"
     },
-    "hash": "6c653de5e3275396a986110a408a6fb71a9884b77d3b7341b260aab2457f8529"
+    "hash": "a978255f832d50bf794b5991957be173fe1bec98fb8ab3e0e8c98c0a6e1e0eab"
   }
 }

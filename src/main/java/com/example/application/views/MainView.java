@@ -5,6 +5,7 @@ import com.example.application.data.Service;
 import com.example.application.model.Flight;
 import com.example.application.model.FlightDetails;
 import com.example.application.utils.FlightNotFoundException;
+import com.flowingcode.vaadin.addons.fontawesome.FontAwesome;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -50,7 +51,8 @@ public class MainView extends VerticalLayout {
         Grid<Flight> flightGrid = createFlightGrid(service);
 
         H2 title = new H2();
-        String html = "Flights:";
+        String html = "<iron-icon id='planeIcon' icon='" + FontAwesome.Solid.PLANE.getIconName() + "'></iron-icon>"
+                                 + " Flights:";
         title.getElement().setProperty("innerHTML", html);
 
         VerticalLayout leftVertical = createLeftLayout();
