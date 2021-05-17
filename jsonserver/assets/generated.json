@@ -1,0 +1,37 @@
+[
+  {
+    "flightId": 0,
+    "flightNumber": 4090,
+    "departureAirportIATACode": "LAX",
+    "arrivalAirportIATACode": "LEW",
+    "departureDate": "2021-02-11T07:32:04-01:00"
+  },
+  {
+    "flightId": 1,
+    "flightNumber": 7116,
+    "departureAirportIATACode": "SEA",
+    "arrivalAirportIATACode": "MIT",
+    "departureDate": "2016-01-23T08:02:48-01:00"
+  },
+  {
+    "flightId": 2,
+    "flightNumber": 9696,
+    "departureAirportIATACode": "ANC",
+    "arrivalAirportIATACode": "MIT",
+    "departureDate": "2015-07-21T11:27:01-02:00"
+  },
+  {
+    "flightId": 3,
+    "flightNumber": 3036,
+    "departureAirportIATACode": "LAX",
+    "arrivalAirportIATACode": "MIT",
+    "departureDate": "2019-01-15T04:51:20-01:00"
+  },
+  {
+    "flightId": 4,
+    "flightNumber": 4290,
+    "departureAirportIATACode": "YYT",
+    "arrivalAirportIATACode": "MIT",
+    "departureDate": "2015-04-12T12:21:33-02:00"
+  }
+]

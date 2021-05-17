@@ -1,0 +1,31 @@
+.main-view {
+  display: block;
+  padding: 1em;
+}
+
+.main-view h4 {
+  font-weight: bold;
+  color: limegreen;
+}
+
+.main-view h2 {
+  margin-top: 0;
+  font-weight: bold;
+  color: limegreen;
+}
+
+html {
+
+}
+
+p {
+  margin-bottom: 0;
+}
+
+#leftResultLayout {
+  border: 1px solid #7e3ff2;
+}
+
+#date-piker {
+  width: 17rem;
+}
