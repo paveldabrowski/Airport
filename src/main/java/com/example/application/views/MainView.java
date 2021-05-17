@@ -124,16 +124,18 @@ public class MainView extends VerticalLayout {
         ComboBox<String> airportCodeCombobox = new ComboBox<>("AirportCode");
         airportCodeCombobox.setItems(service.getAirportCodes());
         Button airportCodeButton = new Button("Details");
-        airportCodeButton.addClickListener(event -> {
-            processAirportCode(airportCodeCombobox.getValue());
-        });
-
 
         ComboBox<OffsetDateTime> dateTimeComboBox = new ComboBox<>("Date");
         dateTimeComboBox.setItems(service.getDepartureDates());
         Button dateTimeButton = new Button("Details");
 
+        dateTimeButton.addClickListener(buttonClickEvent -> {
+            processAirportCode(airportCodeCombobox.getValue(), dateTimeComboBox.getValue());
+        });
 
+        airportCodeButton.addClickListener(event -> {
+            processAirportCode(airportCodeCombobox.getValue(), dateTimeComboBox.getValue());
+        });
 
 
         HorizontalLayout inputsLayout = new HorizontalLayout(airportCodeCombobox, airportCodeButton, dateTimeComboBox,
@@ -145,8 +147,8 @@ public class MainView extends VerticalLayout {
         return rightLayout;
     }
 
-    private void processAirportCode(String code) {
-        Map<String, Integer> flightsStatistics = service.getFlightsStatistics(code);
+    private void processAirportCode(String code, OffsetDateTime dateTime) {
+        Map<String, Integer> flightsStatistics = service.getFlightsStatistics(code, dateTime);
     }
 
     private void getFlightDetails(OffsetDateTime departureDate) {

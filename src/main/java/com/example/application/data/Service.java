@@ -1,6 +1,7 @@
 package com.example.application.data;
 
 import com.example.application.SearchTerm;
+import com.example.application.model.Baggage;
 import com.example.application.model.Flight;
 import com.example.application.model.FlightDetails;
 import com.example.application.utils.FlightNotFoundException;
@@ -67,27 +68,52 @@ public class Service {
 
     public Set<OffsetDateTime> getDepartureDates(){ return repository.getDepartureDates(); }
 
-    public Map<String, Integer> getFlightsStatistics(String code) {
-        Map<String, Integer> flightsStatistics = new HashMap<>();
+    public Map<String, Integer> getFlightsStatistics(String code, OffsetDateTime dateTime) {
         List<Flight> flights = repository.getFlights();
-        int departures = getDepartures(code, flights);
-        int arrivals = getArrivals(code, flights);
-        int baggageArriving = getBaggageArriving(code, flights);
-        flightsStatistics.put("departures", departures);
-        flightsStatistics.put("arrivals", arrivals);
+        List<Flight> departures = getDepartures(code, flights, dateTime);
+        List<Flight> arrivals = getArrivals(code, flights, dateTime);
+        return buildStatisticsMap(departures, arrivals);
+    }
 
+    private Map<String, Integer> buildStatisticsMap(List<Flight> departures, List<Flight> arrivals) {
+        Map<String, Integer> flightsStatistics = new HashMap<>();
+        int baggageArriving = getBaggagePieces(arrivals);
+        int baggageDeparting = getBaggagePieces(departures);
+        flightsStatistics.put("departures", departures.size());
+        flightsStatistics.put("arrivals", arrivals.size());
+        flightsStatistics.put("baggageArriving", baggageArriving);
+        flightsStatistics.put("baggageDeparting", baggageDeparting);
         return flightsStatistics;
     }
 
-    private int getDepartures(String code, List<Flight> flights) {
-        List<Flight> departures = flights.stream()
-                .filter(flight -> flight.getDepartureAirportIATACode().equals(code)).collect(Collectors.toList());
-        return departures.size();
+    private int getBaggagePieces(List<Flight> flights) {
+        List<Baggage> baggage = flights.stream().map(flight -> {
+            var flightOptional = repository.getFlightDetails(flight);
+            if (flightOptional.isPresent())
+                return flightOptional.get().getBaggage();
+            return new ArrayList<Baggage>();
+        }).flatMap(List::stream).collect(Collectors.toList());
+
+        return baggage.stream().mapToInt(value -> value.getPieces()).sum();
     }
 
-    private int getArrivals(String code, List<Flight> flights) {
-        List<Flight> departures = flights.stream()
+    private List<Flight> getDepartures(String code, List<Flight> flights, OffsetDateTime dateTime) {
+        if (dateTime != null) {
+            return flights.stream().filter(flight ->
+                    flight.getDepartureAirportIATACode().equals(code) && flight.getDepartureDate().equals(dateTime))
+                    .collect(Collectors.toList());
+        }
+        return flights.stream().filter(flight ->
+                flight.getDepartureAirportIATACode().equals(code)).collect(Collectors.toList());
+    }
+
+    private List<Flight> getArrivals(String code, List<Flight> flights, OffsetDateTime dateTime) {
+        if (dateTime != null){
+            return flights.stream().filter(flight ->
+                    flight.getArrivalAirportIATACode().equals(code) && flight.getDepartureDate().equals(dateTime))
+                    .collect(Collectors.toList());
+        }
+        return flights.stream()
                 .filter(flight -> flight.getArrivalAirportIATACode().equals(code)).collect(Collectors.toList());
-        return departures.size();
     }
 }

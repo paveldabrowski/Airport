@@ -45,17 +45,6 @@ class Repository {
         return Optional.ofNullable(restTemplate.getForObject(FLIGHTS_URL + "/" + id, Flight.class));
     }
 
-    Optional<FlightDetails> getFlightDetails(Flight flight) {
-        if (flight.getId() != null) {
-            var responseEntity = restTemplate.getForEntity(DETAILS_URL + "?flightId="
-                    + flight.getId(), FlightDetails[].class);
-            FlightDetails[] flightDetails = responseEntity.getBody();
-            return checkIfValueIsPresent(flightDetails);
-        } else {
-            return Optional.empty();
-        }
-    }
-
     Optional<FlightDetails> getFlightDetailsByFlightNumber(Integer flightNumber) throws FlightNotFoundException {
         if (flightNumber == null)
             throw new FlightNotFoundException();
@@ -64,6 +53,13 @@ class Repository {
             return getFlightDetails(flightEntity.get());
         }
         return Optional.empty();
+    }
+
+    private Optional<Flight> getFlightByFlightNumber(Integer flightNumber){
+        ResponseEntity<Flight[]> flightsResponse = restTemplate.getForEntity(FLIGHTS_URL + "?flightNumber="
+                + flightNumber, Flight[].class);
+        Flight[] flights = flightsResponse.getBody();
+        return checkIfValueIsPresent(flights);
     }
 
     Optional<FlightDetails> getFlightDetailsByFlightDate(OffsetDateTime departureDate) {
@@ -78,11 +74,15 @@ class Repository {
         return flights.stream().filter(flight1 -> flight1.getDepartureDate().equals(date)).findFirst();
     }
 
-    private Optional<Flight> getFlightByFlightNumber(Integer flightNumber){
-        ResponseEntity<Flight[]> flightsResponse = restTemplate.getForEntity(FLIGHTS_URL + "?flightNumber="
-                        + flightNumber, Flight[].class);
-        Flight[] flights = flightsResponse.getBody();
-        return checkIfValueIsPresent(flights);
+    Optional<FlightDetails> getFlightDetails(Flight flight) {
+        if (flight.getId() != null) {
+            var responseEntity = restTemplate.getForEntity(DETAILS_URL + "?flightId="
+                    + flight.getId(), FlightDetails[].class);
+            FlightDetails[] flightDetails = responseEntity.getBody();
+            return checkIfValueIsPresent(flightDetails);
+        } else {
+            return Optional.empty();
+        }
     }
 
     private <T> Optional<T> checkIfValueIsPresent(T[] array){
