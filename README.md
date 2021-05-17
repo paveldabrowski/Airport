@@ -1,4 +1,4 @@
-## Screenshots
+## Screenshot
 ![Look and feel](./jsonserver/assets/img.png)
 
 ### Running the application from the command line.
