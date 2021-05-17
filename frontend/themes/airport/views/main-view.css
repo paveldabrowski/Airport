@@ -22,8 +22,28 @@ p {
   margin-bottom: 0;
 }
 
+#topVertical {
+  padding-bottom: 0;
+}
+
+#leftVertical {
+  /*border: 1px solid #7e3ff2;*/
+  border: 1px solid red;
+}
+
+#rightVertical {
+  /*border: 1px solid #7e3ff2;*/
+  border: 1px solid red;
+}
+
 #leftResultLayout {
   border: 1px solid #7e3ff2;
+  height: 100%;
+}
+
+#rightResultLayout {
+  border: 1px solid #7e3ff2;
+  height: 100%;
 }
 
 #date-piker {

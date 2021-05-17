@@ -37,29 +37,41 @@ public class MainView extends VerticalLayout {
     private final Paragraph baggageWeightText = new Paragraph("Baggage weight: ");
     private final Paragraph totalWeight = new Paragraph("Total weight: ");
     private final Paragraph departureFlights = new Paragraph("Departure flights: ");
+    private final Paragraph departureBaggage = new Paragraph("Departure baggage: ");
     private final Paragraph arrivalFlights = new Paragraph("Arrival flights: ");
-//    private final Paragraph totalWeight = new Paragraph("Total weight: ");
+    private final Paragraph arrivalBaggage = new Paragraph("Arrival baggage: ");
     private final BeanValidationBinder<Flight> flightBinder = new BeanValidationBinder<>(Flight.class);
     private final H4 flightNumberText = new H4("Flight number: ");
+    private final H4 details = new H4("Details: ");
 
     public MainView(Service service) {
         this.service = service;
         addClassName("main-view");
         Grid<Flight> flightGrid = createFlightGrid(service);
 
-        H2 title = new H2("Flights:");
-
+        H2 title = new H2();
+        String html = "Flights:";
+        title.getElement().setProperty("innerHTML", html);
 
         VerticalLayout leftVertical = createLeftLayout();
+        leftVertical.setId("leftVertical");
         VerticalLayout rightVertical = createRightLayout();
+        rightVertical.setId("rightVertical");
 
         VerticalLayout leftResultLayout = new VerticalLayout(flightNumberText, cargoWeightText, baggageWeightText,
                 totalWeight);
         leftResultLayout.setId("leftResultLayout");
 
-        add(new VerticalLayout(title, flightGrid),
-                new HorizontalLayout(leftVertical, rightVertical),
-                new HorizontalLayout(leftResultLayout));
+        VerticalLayout rightResultLayout = new VerticalLayout(details, arrivalFlights, departureFlights, arrivalBaggage,
+                departureBaggage);
+        rightResultLayout.setId("rightResultLayout");
+
+        VerticalLayout topVertical = new VerticalLayout(title, flightGrid);
+        topVertical.setId("topVertical");
+        add(topVertical, new HorizontalLayout(
+                new VerticalLayout(leftVertical, leftResultLayout),
+                new VerticalLayout(rightVertical, rightResultLayout))
+        );
     }
 
     private Grid<Flight> createFlightGrid(Service service) {
@@ -110,45 +122,16 @@ public class MainView extends VerticalLayout {
             }
         });
         flightBinder.setBean(new Flight());
-
-        Paragraph paragraph = new Paragraph("Select flight or type/paste keywords to get more info about weights:");
+        String html = "Select flight or type/paste keywords to get more info about weights.<br>" +
+                "You can search by date or flight number.";
+        Paragraph paragraph = new Paragraph();
+        paragraph.getElement().setProperty("innerHTML", html);
         HorizontalLayout inputsLayout = new HorizontalLayout(
                 flightNumberField, flightNumberButton,
                 dateTimePiker, departureDateButton
         );
         VerticalLayout leftVertical = new VerticalLayout(paragraph, inputsLayout);
         return leftVertical;
-    }
-
-    private VerticalLayout createRightLayout() {
-        ComboBox<String> airportCodeCombobox = new ComboBox<>("AirportCode");
-        airportCodeCombobox.setItems(service.getAirportCodes());
-        Button airportCodeButton = new Button("Details");
-
-        ComboBox<OffsetDateTime> dateTimeComboBox = new ComboBox<>("Date");
-        dateTimeComboBox.setItems(service.getDepartureDates());
-        Button dateTimeButton = new Button("Details");
-
-        dateTimeButton.addClickListener(buttonClickEvent -> {
-            processAirportCode(airportCodeCombobox.getValue(), dateTimeComboBox.getValue());
-        });
-
-        airportCodeButton.addClickListener(event -> {
-            processAirportCode(airportCodeCombobox.getValue(), dateTimeComboBox.getValue());
-        });
-
-
-        HorizontalLayout inputsLayout = new HorizontalLayout(airportCodeCombobox, airportCodeButton, dateTimeComboBox,
-                dateTimeButton);
-
-        Paragraph paragraph = new Paragraph("Select airport code or date to get more info about departures and " +
-                "arrivals:");
-        VerticalLayout rightLayout = new VerticalLayout(paragraph, inputsLayout);
-        return rightLayout;
-    }
-
-    private void processAirportCode(String code, OffsetDateTime dateTime) {
-        Map<String, Integer> flightsStatistics = service.getFlightsStatistics(code, dateTime);
     }
 
     private void getFlightDetails(OffsetDateTime departureDate) {
@@ -185,5 +168,53 @@ public class MainView extends VerticalLayout {
                 "Flight not found. Choose date, provide flight number or simply select flight from table.",
                 5000,
                 Notification.Position.MIDDLE);
+    }
+
+    private VerticalLayout createRightLayout() {
+        ComboBox<String> airportCodeCombobox = new ComboBox<>("Airport code");
+        airportCodeCombobox.setItems(service.getAirportCodes());
+        Button airportCodeButton = new Button("Details");
+
+        ComboBox<OffsetDateTime> dateTimeComboBox = new ComboBox<>("Date");
+        dateTimeComboBox.setItems(service.getDepartureDates());
+        Button dateTimeButton = new Button("Details");
+
+        dateTimeButton.addClickListener(buttonClickEvent -> {
+            getFlightsStatistics(airportCodeCombobox.getValue(), dateTimeComboBox.getValue());
+        });
+
+        airportCodeButton.addClickListener(event -> {
+            getFlightsStatistics(airportCodeCombobox.getValue(), dateTimeComboBox.getValue());
+        });
+
+
+        HorizontalLayout inputsLayout = new HorizontalLayout(airportCodeCombobox, airportCodeButton, dateTimeComboBox,
+                dateTimeButton);
+
+        Paragraph paragraph = new Paragraph();
+        String html = "Select airport code and date to get more info about departures and " +
+                               "arrivals. </br> If the date isn't selected, the statistics for the entire time appear.";
+        paragraph.getElement().setProperty("innerHTML", html);
+        VerticalLayout rightLayout = new VerticalLayout(paragraph, inputsLayout);
+        return rightLayout;
+    }
+
+    private void getFlightsStatistics(String code, OffsetDateTime dateTime) {
+        if (code != null) {
+            Map<String, Integer> flightsStatistics = service.getFlightsStatistics(code, dateTime);
+            if (dateTime != null)
+                setTotalFlightStatistics(flightsStatistics, "Selected date");
+            else
+                setTotalFlightStatistics(flightsStatistics, "Total");
+        } else {
+            Notification.show("Airport code cannot be not selected.", 5000, Notification.Position.MIDDLE);
+        }
+    }
+
+    private void setTotalFlightStatistics(Map<String, Integer> flightsStatistics, String prefix) {
+        arrivalFlights.setText(prefix + " arrivals: " + flightsStatistics.get("arrivals"));
+        departureFlights.setText(prefix + " departures: " + flightsStatistics.get("departures"));
+        arrivalBaggage.setText(prefix + " arrival baggage: " + flightsStatistics.get("baggageArriving"));
+        departureBaggage.setText(prefix + " departing baggage: " + flightsStatistics.get("baggageDeparting"));
     }
 }
